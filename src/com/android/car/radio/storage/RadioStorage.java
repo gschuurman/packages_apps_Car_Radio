@@ -132,6 +132,22 @@ public class RadioStorage {
         }
     }
 
+    private class AddStationsTask extends AsyncTask<List<Program>, Void, Void> {
+        @Override
+        protected Void doInBackground(List<Program>... programs) {
+            mDatabase.addStations(programs[0]);
+            return null;
+        }
+    }
+
+    private class ClearStationsTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... unused) {
+            mDatabase.clearStations();
+            return null;
+        }
+    }
+
     /**
      * Persists the current Browse station list, replacing any previously stored list. The update
      * is reflected through the live object returned from {@link #getStations}.
@@ -140,6 +156,24 @@ public class RadioStorage {
      */
     public void saveStations(@NonNull List<Program> stations) {
         new SaveStationsTask().execute(Objects.requireNonNull(stations));
+    }
+
+    /**
+     * Additively persists {@code stations} (appended after existing entries), keeping any prior
+     * list. Reflected through the live object returned from {@link #getStations}.
+     *
+     * @param stations Stations to append, in display order.
+     */
+    public void addStations(@NonNull List<Program> stations) {
+        new AddStationsTask().execute(Objects.requireNonNull(stations));
+    }
+
+    /**
+     * Clears the persisted Browse station list. Reflected through the live object returned from
+     * {@link #getStations}.
+     */
+    public void clearStations() {
+        new ClearStationsTask().execute();
     }
 
     private class AddFavoriteTask extends AsyncTask<Program, Void, Void> {

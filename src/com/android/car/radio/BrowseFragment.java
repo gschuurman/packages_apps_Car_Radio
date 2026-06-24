@@ -57,6 +57,8 @@ public class BrowseFragment extends Fragment {
     private View mScan;
     private TextView mScanLabel;
 
+    // Full union list from the controller (both bands) and the band-filtered subset shown.
+    private List<Station> mAllStations = new ArrayList<>();
     private List<Station> mStations = new ArrayList<>();
     @Nullable private ProgramInfo mCurrent;
 
@@ -88,11 +90,15 @@ public class BrowseFragment extends Fragment {
         list.setLayoutManager(new LinearLayoutManager(getContext()));
         list.setAdapter(mAdapter);
 
-        mScan.setOnClickListener(x -> mController.seek(true));
+        mScanLabel.setText(R.string.action_scan);
+        mScan.setOnClickListener(x -> {
+            if (getActivity() instanceof RadioActivity) {
+                ((RadioActivity) getActivity()).showScanWizard();
+            }
+        });
 
         mController.getStations().observe(getViewLifecycleOwner(), stations -> {
-            mStations = stations != null ? stations : new ArrayList<>();
-            mAdapter.setStations(mStations);
+            mAllStations = stations != null ? stations : new ArrayList<>();
             refresh();
         });
         mController.getCurrentProgram().observe(getViewLifecycleOwner(), info -> {
@@ -102,15 +108,6 @@ public class BrowseFragment extends Fragment {
         });
         mController.getFavorites().observe(getViewLifecycleOwner(), favs -> {
             if (favs != null) mAdapter.setFavorites(favs);
-        });
-        mController.getPlaybackState().observe(getViewLifecycleOwner(), state -> {
-            boolean seeking = state != null
-                    && (state == android.support.v4.media.session.PlaybackStateCompat.STATE_CONNECTING
-                        || state == android.support.v4.media.session.PlaybackStateCompat
-                                .STATE_SKIPPING_TO_NEXT
-                        || state == android.support.v4.media.session.PlaybackStateCompat
-                                .STATE_SKIPPING_TO_PREVIOUS);
-            mScanLabel.setText(seeking ? R.string.action_scanning : R.string.action_scan_band);
         });
 
         try {
@@ -139,6 +136,14 @@ public class BrowseFragment extends Fragment {
         ProgramType pt = band();
         boolean isFm = pt == ProgramType.FM;
         int accent = UiUtils.accentFor(pt);
+
+        // The cache holds both bands; show only the stations of the active band.
+        mStations = new ArrayList<>();
+        for (Station s : mAllStations) {
+            if (ProgramType.fromSelector(s.selector) == pt) mStations.add(s);
+        }
+        mAdapter.setStations(mStations);
+
         mAdapter.setShowFrequency(isFm);
         mAdapter.setAccent(accent);
 

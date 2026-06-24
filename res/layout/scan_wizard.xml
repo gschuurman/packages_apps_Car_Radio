@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0. Full-band scan wizard overlay. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ui_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingStart="64dp"
+        android:paddingEnd="64dp">
+
+        <TextView
+            android:id="@+id/scan_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/ui_text"
+            android:textSize="@dimen/ui_text_title"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/scan_title" />
+
+        <!-- Animated indicator (visible while scanning) -->
+        <com.android.car.radio.widget.EqualizerView
+            android:id="@+id/scan_eq"
+            android:layout_width="120dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <!-- Body text: intro blurb or live progress label -->
+        <TextView
+            android:id="@+id/scan_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:lineSpacingExtra="6dp"
+            android:textColor="@color/ui_text_dim"
+            android:textSize="@dimen/ui_text_md"
+            android:text="@string/scan_intro" />
+
+        <TextView
+            android:id="@+id/scan_sub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:textColor="@color/ui_text_dimmer"
+            android:textSize="@dimen/ui_text_sm" />
+
+        <!-- Running found counts (visible while scanning / on summary) -->
+        <TextView
+            android:id="@+id/scan_counts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textColor="@color/ui_accent_dab"
+            android:textSize="@dimen/ui_text_lg"
+            android:fontFamily="sans-serif-medium"
+            android:visibility="gone" />
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="40dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/scan_btn_secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:minWidth="170dp"
+                android:gravity="center"
+                android:paddingStart="34dp"
+                android:paddingEnd="34dp"
+                android:layout_marginEnd="18dp"
+                android:textColor="@color/ui_text"
+                android:textSize="@dimen/ui_text_md"
+                android:fontFamily="sans-serif-medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/scan_cancel" />
+
+            <TextView
+                android:id="@+id/scan_btn_primary"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:minWidth="190dp"
+                android:gravity="center"
+                android:paddingStart="34dp"
+                android:paddingEnd="34dp"
+                android:textColor="#FF0A1418"
+                android:textSize="@dimen/ui_text_md"
+                android:fontFamily="sans-serif-medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/scan_start" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

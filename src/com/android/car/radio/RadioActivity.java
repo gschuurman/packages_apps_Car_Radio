@@ -180,6 +180,26 @@ public class RadioActivity extends FragmentActivity {
         showScreen(Screen.SETTINGS);
     }
 
+    /** Shows the full-band scan wizard as a full-screen overlay over the shell. */
+    public void showScanWizard() {
+        if (!mIsConnected) return;
+        View overlay = findViewById(R.id.scan_overlay);
+        overlay.setVisibility(View.VISIBLE);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.scan_overlay, ScanWizardFragment.newInstance(mRadioController))
+                .commit();
+    }
+
+    /** Dismisses the scan wizard overlay. */
+    public void hideScanWizard() {
+        View overlay = findViewById(R.id.scan_overlay);
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.scan_overlay);
+        if (f != null) {
+            getSupportFragmentManager().beginTransaction().remove(f).commit();
+        }
+        overlay.setVisibility(View.GONE);
+    }
+
     private void showScreen(Screen screen) {
         mScreen = screen;
         Fragment f;

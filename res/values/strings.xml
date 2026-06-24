@@ -95,4 +95,22 @@ limitations under the License.
     <string name="setting_traffic_desc">Interrupt playback for live traffic and travel news bulletins.</string>
     <string name="setting_dls_title">Keep DLS metadata on lock</string>
     <string name="setting_dls_desc">Persist now-playing track and artist info across the cluster display.</string>
+
+    <!-- Full-band scan wizard -->
+    <string name="settings_scan_title">Scan for stations</string>
+    <string name="settings_scan_desc">Sweep FM and all DAB+ ensembles and rebuild the station list.</string>
+    <string name="settings_clear_title">Clear saved stations</string>
+    <string name="settings_clear_desc">Remove the cached Browse list. It refills as you tune or scan.</string>
+    <string name="settings_clear_done">Saved stations cleared</string>
+    <string name="scan_title">Scan for stations</string>
+    <string name="scan_intro">Sweeps the FM band and every DAB+ ensemble, then saves everything to your station list. Takes about 1–2 minutes. Audio is muted while scanning and your station resumes afterward.</string>
+    <string name="scan_intro_warning">This replaces your current saved station list.</string>
+    <string name="scan_start">Start scan</string>
+    <string name="scan_cancel">Cancel</string>
+    <string name="scan_phase_fm">Scanning FM…</string>
+    <string name="scan_phase_dab">Scanning DAB+ ensembles…</string>
+    <string name="scan_counts">%1$d FM · %2$d DAB+</string>
+    <string name="scan_done_title">Scan complete</string>
+    <string name="scan_done_summary">Found %1$d FM and %2$d DAB+ stations.</string>
+    <string name="scan_done">Done</string>
 </resources>

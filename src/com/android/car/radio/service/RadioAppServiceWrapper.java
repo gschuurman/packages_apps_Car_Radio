@@ -42,6 +42,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -92,6 +93,14 @@ public class RadioAppServiceWrapper {
     private final MutableLiveData<Integer> mPlaybackState = new MutableLiveData<>();
     private final MutableLiveData<ProgramInfo> mCurrentProgram = new MutableLiveData<>();
     private final MutableLiveData<List<ProgramInfo>> mProgramList = new MutableLiveData<>();
+
+    /** Listener notified when the dynamic program list signals completion (DAB sweep finished). */
+    public interface ProgramListCompleteListener {
+        void onProgramListComplete();
+    }
+
+    private final CopyOnWriteArrayList<ProgramListCompleteListener> mCompleteListeners =
+            new CopyOnWriteArrayList<>();
 
     {
         mConnectionState.postValue(STATE_CONNECTING);
@@ -179,7 +188,24 @@ public class RadioAppServiceWrapper {
         public void onProgramListChanged(List<ProgramInfo> plist) {
             mProgramList.postValue(plist);
         }
+
+        @Override
+        public void onProgramListComplete() {
+            for (ProgramListCompleteListener l : mCompleteListeners) {
+                l.onProgramListComplete();
+            }
+        }
     };
+
+    /** Registers a listener for program-list completion (DAB ensemble sweep finished). */
+    public void addProgramListCompleteListener(@NonNull ProgramListCompleteListener listener) {
+        mCompleteListeners.add(Objects.requireNonNull(listener));
+    }
+
+    /** Unregisters a previously added completion listener. */
+    public void removeProgramListCompleteListener(@NonNull ProgramListCompleteListener listener) {
+        mCompleteListeners.remove(listener);
+    }
 
     /**
      * Binds to running {@link RadioAppService} instance or starts one if it doesn't exist.
@@ -369,6 +395,22 @@ public class RadioAppServiceWrapper {
      */
     public void tuneToDefaultIfNeeded() {
         callService(service -> service.tuneToDefaultIfNeeded());
+    }
+
+    /**
+     * Enters DAB scan mode and kicks a fresh full ensemble sweep. Services arrive via
+     * {@link #getProgramList}; completion is delivered to
+     * {@link ProgramListCompleteListener}s.
+     */
+    public void startDabScan() {
+        callService(service -> service.startDabScan());
+    }
+
+    /**
+     * Leaves scan mode (re-enables normal DAB auto-tune behavior).
+     */
+    public void endScan() {
+        callService(service -> service.endScan());
     }
 
     /**

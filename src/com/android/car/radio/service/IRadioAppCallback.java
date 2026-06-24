@@ -53,4 +53,11 @@ interface IRadioAppCallback {
      * @param plist New program list
      */
     void onProgramListChanged(List<RadioManager.ProgramInfo> plist);
+
+    /**
+     * Called when the dynamic program list signals completion (the HAL emitted its terminal
+     * "complete" chunk). For DAB this marks the end of a full ensemble sweep, so the scan can
+     * harvest the accumulated program list.
+     */
+    void onProgramListComplete();
 }

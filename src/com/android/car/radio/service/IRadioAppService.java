@@ -97,4 +97,17 @@ interface IRadioAppService {
      * Tunes to the previously selected program or the default channel.
      */
     void tuneToDefaultIfNeeded();
+
+    /**
+     * Enters DAB scan mode: suppresses the automatic tune-to-first-service (which would otherwise
+     * cancel the HAL's ensemble sweep) and reopens the dynamic program list to kick a fresh full
+     * Band III sweep. The discovered services stream back via {@link IRadioAppCallback}, and
+     * completion is signalled by {@link IRadioAppCallback#onProgramListComplete}.
+     */
+    void startDabScan();
+
+    /**
+     * Leaves scan mode (re-enables normal DAB auto-tune behavior).
+     */
+    void endScan();
 }

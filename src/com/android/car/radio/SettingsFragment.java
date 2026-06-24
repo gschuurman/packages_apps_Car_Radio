@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -103,6 +104,20 @@ public class SettingsFragment extends Fragment {
             container.addView(row);
         }
 
+        // Station-list actions (tappable, no toggle).
+        addActionRow(inflater, container, R.string.settings_scan_title, R.string.settings_scan_desc,
+                x -> {
+                    if (getActivity() instanceof RadioActivity) {
+                        ((RadioActivity) getActivity()).showScanWizard();
+                    }
+                });
+        addActionRow(inflater, container, R.string.settings_clear_title,
+                R.string.settings_clear_desc, x -> {
+                    mController.clearStations();
+                    Toast.makeText(getContext(), R.string.settings_clear_done,
+                            Toast.LENGTH_SHORT).show();
+                });
+
         // Static region/tuner info row.
         View region = inflater.inflate(R.layout.settings_row, container, false);
         ((TextView) region.findViewById(R.id.setting_title))
@@ -111,5 +126,15 @@ public class SettingsFragment extends Fragment {
                 .setText(R.string.settings_region_desc);
         region.findViewById(R.id.setting_switch).setVisibility(View.GONE);
         container.addView(region);
+    }
+
+    private void addActionRow(LayoutInflater inflater, LinearLayout container, int title, int desc,
+            View.OnClickListener onClick) {
+        View row = inflater.inflate(R.layout.settings_row, container, false);
+        ((TextView) row.findViewById(R.id.setting_title)).setText(title);
+        ((TextView) row.findViewById(R.id.setting_desc)).setText(desc);
+        row.findViewById(R.id.setting_switch).setVisibility(View.GONE);
+        row.setOnClickListener(onClick);
+        container.addView(row);
     }
 }

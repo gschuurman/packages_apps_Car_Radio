@@ -112,6 +112,10 @@ public class RadioAppService extends MediaBrowserServiceCompat implements Lifecy
     // ensemble scan populates the program list, then tunes to the first service.
     @GuardedBy("mLock")
     private boolean mPendingDabAutoTune;
+    // While a full-band scan is in progress, the auto-tune-to-first-DAB-service is suppressed so
+    // the HAL's ensemble sweep is allowed to run to completion across all blocks.
+    @GuardedBy("mLock")
+    private boolean mScanning;
 
     private SkipController mSkipController;
 
@@ -173,7 +177,18 @@ public class RadioAppService extends MediaBrowserServiceCompat implements Lifecy
                         onProgramListChanged();
                     }
                 });
-                mProgramList.addOnCompleteListener(this::pushProgramListUpdate);
+                mProgramList.addOnCompleteListener(() -> {
+                    pushProgramListUpdate();
+                    onProgramListComplete();
+                });
+            }
+        }
+    }
+
+    private void onProgramListComplete() {
+        synchronized (mLock) {
+            for (IRadioAppCallback callback : mRadioAppCallbacks) {
+                tryExec(() -> callback.onProgramListComplete());
             }
         }
     }
@@ -281,6 +296,7 @@ public class RadioAppService extends MediaBrowserServiceCompat implements Lifecy
     // the ensemble scan has discovered. No-op until one is available.
     @GuardedBy("mLock")
     private void maybeAutoTuneDabLocked() {
+        if (mScanning) return;
         if (!mPendingDabAutoTune || mProgramList == null || mRadioTuner == null) return;
         ProgramSelector dabSel = null;
         for (ProgramInfo pi : mProgramList.toList()) {
@@ -532,6 +548,24 @@ public class RadioAppService extends MediaBrowserServiceCompat implements Lifecy
             // the default (empty) list. Done before tuning so the dongle is committed to the band.
             setupProgramList(band == ProgramType.DAB ? dabProgramListFilter() : null);
             tuneToDefault(band);
+        }
+
+        @Override
+        public void startDabScan() {
+            synchronized (mLock) {
+                mScanning = true;
+                mPendingDabAutoTune = false;
+            }
+            // Reopen the dynamic program list with the DAB filter to kick a fresh HAL ensemble
+            // sweep; mScanning keeps maybeAutoTuneDabLocked from cancelling it.
+            setupProgramList(dabProgramListFilter());
+        }
+
+        @Override
+        public void endScan() {
+            synchronized (mLock) {
+                mScanning = false;
+            }
         }
 
         @Override

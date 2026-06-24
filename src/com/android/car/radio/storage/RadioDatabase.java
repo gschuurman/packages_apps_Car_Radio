@@ -78,10 +78,19 @@ abstract class RadioDatabase extends RoomDatabase {
         @Query("DELETE FROM CachedStation")
         void deleteAll();
 
+        @Query("SELECT COALESCE(MAX(sortIndex), -1) FROM CachedStation")
+        int maxSortIndex();
+
         /** Atomically replaces the cached list with {@code stations}. */
         @Transaction
         default void replaceAll(@NonNull List<CachedStation> stations) {
             deleteAll();
+            insertAll(stations);
+        }
+
+        /** Appends {@code stations} after the existing rows (upserting on selector conflict). */
+        @Transaction
+        default void appendAll(@NonNull List<CachedStation> stations) {
             insertAll(stations);
         }
     }
@@ -162,5 +171,27 @@ abstract class RadioDatabase extends RoomDatabase {
             rows.add(new CachedStation(programs.get(i), i));
         }
         stationDao().replaceAll(rows);
+    }
+
+    /**
+     * Appends {@code programs} to the persisted Browse station list, after the existing entries
+     * (selector conflicts upsert in place). Used for additive write-through of live stations.
+     */
+    @WorkerThread
+    public void addStations(@NonNull List<Program> programs) {
+        int base = stationDao().maxSortIndex() + 1;
+        List<CachedStation> rows = new ArrayList<>(programs.size());
+        for (int i = 0; i < programs.size(); i++) {
+            rows.add(new CachedStation(programs.get(i), base + i));
+        }
+        stationDao().appendAll(rows);
+    }
+
+    /**
+     * Clears the persisted Browse station list.
+     */
+    @WorkerThread
+    public void clearStations() {
+        stationDao().deleteAll();
     }
 }

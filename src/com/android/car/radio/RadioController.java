@@ -38,7 +38,8 @@ import com.android.car.radio.service.RadioAppServiceWrapper.ConnectionState;
 import com.android.car.radio.storage.RadioStorage;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -68,16 +69,19 @@ public class RadioController {
     private final ExecutorService mArtExecutor = Executors.newSingleThreadExecutor();
     private int mLastArtId = 0;
 
-    // Browse station list: the live program list when the tuner has one, otherwise the persisted
-    // cache so the list is shown immediately on cold start. The live list is written through to
-    // storage as it arrives. mLastSavedUris dedupes those writes.
+    // Browse station list: the union of the persisted cache and the tuner's live program list
+    // (live rows overlaid by primary id so the tuned ensemble keeps real signal/DLS). New live
+    // stations are additively written through to storage so normal tuning tops up the cache
+    // without wiping a previous scan's results.
     private final MediatorLiveData<List<Station>> mStations = new MediatorLiveData<>();
-    private Set<String> mLastSavedUris = new LinkedHashSet<>();
+
+    private final ScanController mScanController;
 
     public RadioController(@NonNull RadioActivity activity) {
         mActivity = Objects.requireNonNull(activity);
         mRadioStorage = RadioStorage.getInstance(activity);
         mPrefs = new RadioPrefs(activity);
+        mScanController = new ScanController(mAppService, mRadioStorage);
 
         mAppService.getCurrentProgram().observe(activity, this::onCurrentProgramChanged);
         mAppService.getConnectionState().observe(activity, this::onConnectionStateChanged);
@@ -213,37 +217,76 @@ public class RadioController {
         mAppService.setSkipMode(mode);
     }
 
+    /** Live state of an in-progress (or finished) full-band scan, for the scan wizard. */
+    @NonNull
+    public LiveData<ScanState> getScanState() {
+        return mScanController.getState();
+    }
+
+    /** Whether a full-band scan is currently running. */
+    public boolean isScanning() {
+        return mScanController.isRunning();
+    }
+
+    /** Resets the scan wizard to its intro state (call when (re)opening the wizard). */
+    public void resetScan() {
+        mScanController.reset();
+    }
+
+    /** Starts a full-band (FM + all DAB+ ensembles) scan. */
+    public void startScan() {
+        mScanController.start();
+    }
+
+    /** Aborts the running scan, restoring the previous station and leaving the cache untouched. */
+    public void cancelScan() {
+        mScanController.cancel();
+    }
+
+    /** Clears the persisted Browse station cache (cache invalidation from Settings). */
+    public void clearStations() {
+        mRadioStorage.clearStations();
+    }
+
     /**
-     * Rebuilds {@link #mStations}: prefer the live program list (and write it through to
-     * storage), otherwise show the persisted cache. Empty when neither is available yet.
+     * Rebuilds {@link #mStations} as the union of the persisted cache and the live program list:
+     * every cached station is shown, with any live {@link ProgramInfo} overlaid by primary id so
+     * the currently tuned ensemble keeps its real signal/DLS while every other (FM + other DAB
+     * ensembles) station from the cache stays visible. New live stations are additively persisted.
      */
     private void recomputeStations(@Nullable List<ProgramInfo> live,
             @Nullable List<Program> cached) {
-        if (live != null && !live.isEmpty()) {
-            List<Station> out = new ArrayList<>(live.size());
-            for (ProgramInfo info : live) out.add(Station.fromInfo(info));
-            mStations.setValue(out);
-            persistStations(out);
-        } else if (cached != null && !cached.isEmpty()) {
-            List<Station> out = new ArrayList<>(cached.size());
-            for (Program p : cached) out.add(Station.fromProgram(p));
-            mStations.setValue(out);
-        } else {
-            mStations.setValue(new ArrayList<>());
+        LinkedHashMap<String, Station> bySel = new LinkedHashMap<>();
+        if (cached != null) {
+            for (Program p : cached) bySel.put(keyOf(p.getSelector()), Station.fromProgram(p));
         }
+        if (live != null) {
+            for (ProgramInfo info : live) bySel.put(keyOf(info.getSelector()), Station.fromInfo(info));
+        }
+        mStations.setValue(new ArrayList<>(bySel.values()));
+
+        if (live != null && !live.isEmpty()) persistNewLive(live, cached);
     }
 
-    /** Persists the live station list to storage, skipping the write when it is unchanged. */
-    private void persistStations(@NonNull List<Station> stations) {
-        Set<String> uris = new LinkedHashSet<>();
-        List<Program> programs = new ArrayList<>(stations.size());
-        for (Station s : stations) {
-            programs.add(s.toProgram());
-            uris.add(s.selector.toString());
+    /** Additively persists live stations not already in the cache (keeps prior scan results). */
+    private void persistNewLive(@NonNull List<ProgramInfo> live,
+            @Nullable List<Program> cached) {
+        Set<String> have = new HashSet<>();
+        if (cached != null) {
+            for (Program p : cached) have.add(keyOf(p.getSelector()));
         }
-        if (uris.equals(mLastSavedUris)) return;
-        mLastSavedUris = uris;
-        mRadioStorage.saveStations(programs);
+        List<Program> toAdd = new ArrayList<>();
+        for (ProgramInfo info : live) {
+            if (have.add(keyOf(info.getSelector()))) {
+                toAdd.add(Station.fromInfo(info).toProgram());
+            }
+        }
+        if (!toAdd.isEmpty()) mRadioStorage.addStations(toAdd);
+    }
+
+    private static String keyOf(@NonNull ProgramSelector sel) {
+        ProgramSelector.Identifier id = sel.getPrimaryId();
+        return id.getType() + ":" + id.getValue();
     }
 
     private void onCurrentProgramChanged(@NonNull ProgramInfo info) {
