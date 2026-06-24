@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:background="@color/ui_bg"
+    android:fitsSystemWindows="true">
+
+    <!-- ===== NAV RAIL ===== -->
+    <LinearLayout
+        android:id="@+id/nav_rail"
+        android:layout_width="@dimen/ui_rail_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@color/ui_rail"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp">
+
+        <include layout="@layout/nav_rail_button" android:id="@+id/nav_now" />
+        <include layout="@layout/nav_rail_button" android:id="@+id/nav_browse" />
+        <include layout="@layout/nav_rail_button" android:id="@+id/nav_favorites" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <include layout="@layout/nav_rail_button" android:id="@+id/nav_settings" />
+    </LinearLayout>
+
+    <!-- ===== MAIN COLUMN ===== -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- TOP BAR -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ui_topbar_height"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/ui_content_pad"
+            android:paddingEnd="@dimen/ui_content_pad"
+            android:background="@color/ui_bg">
+
+            <TextView
+                android:id="@+id/screen_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/ui_text"
+                android:textSize="@dimen/ui_text_title"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/screen_now_playing" />
+
+            <!-- band tabs -->
+            <LinearLayout
+                android:id="@+id/band_tabs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:layout_marginEnd="18dp">
+
+                <TextView
+                    android:id="@+id/band_tab_dab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="22dp"
+                    android:paddingEnd="22dp"
+                    android:paddingTop="9dp"
+                    android:paddingBottom="9dp"
+                    android:gravity="center"
+                    android:textSize="@dimen/ui_text_sm"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/band_dab" />
+
+                <TextView
+                    android:id="@+id/band_tab_fm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="22dp"
+                    android:paddingEnd="22dp"
+                    android:paddingTop="9dp"
+                    android:paddingBottom="9dp"
+                    android:gravity="center"
+                    android:textSize="@dimen/ui_text_sm"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/band_fm" />
+            </LinearLayout>
+
+            <com.android.car.radio.widget.SignalMeter
+                android:id="@+id/top_signal"
+                android:layout_width="44dp"
+                android:layout_height="@dimen/ui_signal_h" />
+        </LinearLayout>
+
+        <!-- CONTENT + STATUS OVERLAY -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <FrameLayout
+                android:id="@+id/content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/status_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textColor="@color/ui_text_dim"
+                android:textSize="@dimen/ui_text_lg"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- PERSISTENT MINI PLAYER -->
+        <include layout="@layout/mini_player" android:id="@+id/mini_player" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0. Browse screen (DAB / FM). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/ui_content_pad"
+    android:paddingEnd="@dimen/ui_content_pad"
+    android:paddingTop="20dp"
+    android:paddingBottom="12dp">
+
+    <!-- subtitle + scan -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/browse_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/ui_text_dimmer"
+            android:textSize="@dimen/ui_text_sm" />
+
+        <LinearLayout
+            android:id="@+id/browse_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="46dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="9dp"
+                android:src="@drawable/ic_scan"
+                android:id="@+id/browse_scan_icon" />
+
+            <TextView
+                android:id="@+id/browse_scan_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_scan_band"
+                android:textSize="@dimen/ui_text_sm"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- FM dial (hidden for DAB) -->
+    <LinearLayout
+        android:id="@+id/browse_fm_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
+        android:background="@drawable/bg_card"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/browse_freq"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/ui_accent_fm"
+            android:textSize="48dp"
+            android:fontFamily="monospace" />
+
+        <com.android.car.radio.widget.FmDialView
+            android:id="@+id/browse_dial"
+            android:layout_width="match_parent"
+            android:layout_height="62dp"
+            android:layout_marginTop="6dp" />
+    </LinearLayout>
+
+    <!-- DAB ensemble header (hidden for FM) -->
+    <LinearLayout
+        android:id="@+id/browse_dab_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/browse_ensemble"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="#FFC4C8CE"
+            android:textSize="@dimen/ui_text_sm"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05" />
+
+        <com.android.car.radio.widget.SignalMeter
+            android:id="@+id/browse_ens_signal"
+            android:layout_width="40dp"
+            android:layout_height="28dp" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/browse_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+</LinearLayout>

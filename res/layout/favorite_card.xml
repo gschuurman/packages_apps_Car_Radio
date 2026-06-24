@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0. One favorite card. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fav_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="18dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="@drawable/bg_card">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/fav_logo"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:gravity="center"
+            android:textColor="#FFFFFFFF"
+            android:textSize="@dimen/ui_text_md"
+            android:fontFamily="sans-serif-medium" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/fav_star"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="13dp"
+            android:src="@drawable/ic_star_filled"
+            android:background="?android:attr/selectableItemBackgroundBorderless" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/fav_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textColor="@color/ui_text"
+        android:textSize="@dimen/ui_text_md"
+        android:fontFamily="sans-serif-medium" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/fav_band"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:textSize="@dimen/ui_text_xs"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/fav_sub"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="9dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:fontFamily="monospace"
+            android:textColor="@color/ui_text_dimmer"
+            android:textSize="@dimen/ui_text_sm" />
+    </LinearLayout>
+</LinearLayout>

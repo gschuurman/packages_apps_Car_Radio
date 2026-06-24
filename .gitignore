@@ -1,0 +1,9 @@
+# Build outputs (AOSP builds to $OUT, but guard against stray local artifacts)
+*.apk
+*.class
+*.dex
+*.jar
+/out/
+.idea/
+*.iml
+.DS_Store

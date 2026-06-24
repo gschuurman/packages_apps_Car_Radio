@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0. One preset slot (Now Playing). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="11dp"
+    android:paddingEnd="11dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/preset_logo"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:textColor="#FFFFFFFF"
+        android:textSize="@dimen/ui_text_xs"
+        android:fontFamily="sans-serif-medium" />
+
+    <TextView
+        android:id="@+id/preset_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="9dp"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textColor="#FFD6D9DD"
+        android:textSize="@dimen/ui_text_sm"
+        android:fontFamily="sans-serif-medium" />
+</LinearLayout>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0. One station row in Browse. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/row_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="18dp"
+    android:paddingEnd="14dp"
+    android:paddingTop="13dp"
+    android:paddingBottom="13dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?android:attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/row_freq"
+        android:layout_width="62dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:textSize="@dimen/ui_text_md"
+        android:textColor="@color/ui_text"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/row_logo"
+        android:layout_width="@dimen/ui_logo_sm"
+        android:layout_height="@dimen/ui_logo_sm"
+        android:gravity="center"
+        android:textColor="#FFFFFFFF"
+        android:textSize="@dimen/ui_text_sm"
+        android:fontFamily="sans-serif-medium" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="15dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/row_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/ui_text"
+                android:textSize="@dimen/ui_text_md"
+                android:fontFamily="sans-serif-medium" />
+
+            <com.android.car.radio.widget.EqualizerView
+                android:id="@+id/row_active"
+                android:layout_width="18dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="9dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/row_dls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/ui_text_dimmer"
+            android:textSize="@dimen/ui_text_sm" />
+    </LinearLayout>
+
+    <com.android.car.radio.widget.SignalMeter
+        android:id="@+id/row_signal"
+        android:layout_width="38dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="10dp" />
+
+    <ImageView
+        android:id="@+id/row_star"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="6dp"
+        android:padding="17dp"
+        android:src="@drawable/ic_star_empty"
+        android:background="?android:attr/selectableItemBackgroundBorderless" />
+</LinearLayout>

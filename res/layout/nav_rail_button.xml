@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0.
+     A single nav-rail destination (icon + label). The container id is supplied by the
+     <include> that uses it; icon/label are tinted by RadioActivity per selection state. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/ui_nav_btn"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_marginStart="14dp"
+    android:layout_marginEnd="14dp"
+    android:layout_marginBottom="4dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:id="@+id/nav_icon"
+        android:layout_width="@dimen/ui_nav_icon"
+        android:layout_height="@dimen/ui_nav_icon"
+        android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/nav_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textSize="@dimen/ui_text_xs"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/ui_text_dimmer" />
+</LinearLayout>

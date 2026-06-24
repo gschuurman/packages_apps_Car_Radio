@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: #2C3138; border-radius: 4px; }
+  @keyframes eqb { 0%{height:25%} 50%{height:95%} 100%{height:40%} }
+  @keyframes pulseDot { 0%,100%{opacity:1} 50%{opacity:.3} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</helmet>
+<div style="--accent: {{accent}}; width:1280px; height:720px; display:flex; background:#0E0F12; font-family:'DM Sans',system-ui,sans-serif; color:#EAEBEE; overflow:hidden; position:relative;">
+
+  <!-- NAV RAIL -->
+  <div style="width:104px; flex:none; background:#15171B; border-right:1px solid #21252A; display:flex; flex-direction:column; align-items:center; padding:18px 0;">
+    <div style="width:52px; height:52px; border-radius:15px; background:color-mix(in srgb, var(--accent,#3DD2E6) 22%, #1B1E22); display:flex; align-items:center; justify-content:center; margin-bottom:22px;">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#3DD2E6)" stroke-width="2" stroke-linecap="round"><path d="M4 11h16a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/><path d="M16 4 7 9"/><circle cx="8" cy="15.5" r="2.2" fill="var(--accent,#3DD2E6)" stroke="none"/><path d="M14 14h4M14 17h4"/></svg>
+    </div>
+
+    <button onClick="{{goNow}}" style="position:relative; width:78px; height:74px; border:none; background:transparent; cursor:pointer; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; margin-bottom:4px; color:{{navNowColor}};">
+      <sc-if value="{{navNowActive}}" hint-placeholder-val="{{false}}"><div style="position:absolute; inset:0; border-radius:18px; background:color-mix(in srgb, var(--accent,#3DD2E6) 16%, transparent);"></div></sc-if>
+      <svg style="position:relative" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>
+      <span style="position:relative; font-size:12px; font-weight:600;">Now</span>
+    </button>
+
+    <button onClick="{{goBrowse}}" style="position:relative; width:78px; height:74px; border:none; background:transparent; cursor:pointer; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; margin-bottom:4px; color:{{navBrowseColor}};">
+      <sc-if value="{{navBrowseActive}}" hint-placeholder-val="{{false}}"><div style="position:absolute; inset:0; border-radius:18px; background:color-mix(in srgb, var(--accent,#3DD2E6) 16%, transparent);"></div></sc-if>
+      <svg style="position:relative" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      <span style="position:relative; font-size:12px; font-weight:600;">Browse</span>
+    </button>
+
+    <button onClick="{{goFav}}" style="position:relative; width:78px; height:74px; border:none; background:transparent; cursor:pointer; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:{{navFavColor}};">
+      <sc-if value="{{navFavActive}}" hint-placeholder-val="{{false}}"><div style="position:absolute; inset:0; border-radius:18px; background:color-mix(in srgb, var(--accent,#3DD2E6) 16%, transparent);"></div></sc-if>
+      <svg style="position:relative" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+      <span style="position:relative; font-size:12px; font-weight:600;">Favorites</span>
+    </button>
+
+    <div style="flex:1;"></div>
+
+    <button onClick="{{goSettings}}" style="position:relative; width:78px; height:74px; border:none; background:transparent; cursor:pointer; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:{{navSetColor}};">
+      <sc-if value="{{navSetActive}}" hint-placeholder-val="{{false}}"><div style="position:absolute; inset:0; border-radius:18px; background:color-mix(in srgb, var(--accent,#3DD2E6) 16%, transparent);"></div></sc-if>
+      <svg style="position:relative" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 6.6 19l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H2a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 3.2 6.6l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H8a1.6 1.6 0 0 0 1-1.5V2a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V8a1.6 1.6 0 0 0 1.5 1H22a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+      <span style="position:relative; font-size:12px; font-weight:600;">Settings</span>
+    </button>
+  </div>
+
+  <!-- MAIN COLUMN -->
+  <div style="flex:1; display:flex; flex-direction:column; min-width:0;">
+
+    <!-- TOP BAR -->
+    <div style="height:74px; flex:none; display:flex; align-items:center; gap:20px; padding:0 28px; border-bottom:1px solid #1C2025;">
+      <div style="font-size:23px; font-weight:600; letter-spacing:-.3px;">{{screenTitle}}</div>
+      <div style="flex:1;"></div>
+      <div style="display:flex; background:#1A1D21; border:1px solid #262A30; border-radius:13px; padding:4px; gap:4px;">
+        <button onClick="{{setDAB}}" style="{{dabTabStyle}}">DAB+</button>
+        <button onClick="{{setFM}}" style="{{fmTabStyle}}">FM</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:7px; color:#9BA0A6;">
+        {{topSignalEl}}
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div style="flex:1; min-height:0; position:relative;">
+
+      <!-- ===== NOW PLAYING ===== -->
+      <sc-if value="{{isNow}}" hint-placeholder-val="{{true}}">
+      <div style="position:absolute; inset:0; display:flex; padding:30px 34px; gap:36px;">
+        <div style="width:296px; flex:none; display:flex; flex-direction:column; gap:18px;">
+          <div style="width:296px; height:296px; border-radius:26px; position:relative; overflow:hidden; box-shadow:{{artShadow}}; background:linear-gradient(150deg, color-mix(in srgb, {{curColor}} 90%, #fff), color-mix(in srgb, {{curColor}} 40%, #000)); display:flex; align-items:center; justify-content:center;">
+            <div style="font-size:104px; font-weight:700; color:#fff; opacity:.95; letter-spacing:-3px; text-shadow:0 2px 18px rgba(0,0,0,.3);">{{curLogo}}</div>
+            <div style="position:absolute; left:16px; bottom:15px; display:flex; align-items:center; gap:7px; background:rgba(0,0,0,.42); backdrop-filter:blur(6px); padding:6px 12px; border-radius:20px;">
+              <div style="width:8px; height:8px; border-radius:50%; background:#FF5A5A; animation:pulseDot 1.6s ease-in-out infinite;"></div>
+              <span style="font-size:12px; font-weight:700; letter-spacing:.1em;">LIVE</span>
+            </div>
+          </div>
+          <div style="font-size:12px; letter-spacing:.14em; color:#6E7378; font-weight:600;">PRESETS</div>
+          <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:9px;">
+            <sc-for list="{{presets}}" as="p" hint-placeholder-count="6">
+              <button onClick="{{p.onClick}}" style="{{p.style}}">
+                <sc-if value="{{p.filled}}" hint-placeholder-val="{{true}}">
+                  <div style="width:30px; height:30px; flex:none; border-radius:8px; background:{{p.color}}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff;">{{p.logo}}</div>
+                  <span style="font-size:13px; font-weight:600; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:{{p.nameColor}};">{{p.name}}</span>
+                </sc-if>
+                <sc-if value="{{p.empty}}" hint-placeholder-val="{{false}}">
+                  <span style="font-size:13px; color:#565B61;">＋ P{{p.num}}</span>
+                </sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="flex:1; display:flex; flex-direction:column; min-width:0;">
+          <div style="display:flex; align-items:center; gap:13px;">
+            <span style="font-size:13px; font-weight:700; letter-spacing:.05em; padding:5px 12px; border-radius:8px; background:color-mix(in srgb, var(--accent,#3DD2E6) 18%, transparent); color:var(--accent,#3DD2E6);">{{curBandLabel}}</span>
+            <span style="color:#9BA0A6; font-size:15px;">{{curSub}}</span>
+            <div style="flex:1;"></div>
+            {{curSignalEl}}
+          </div>
+          <div style="font-size:48px; font-weight:700; letter-spacing:-1.2px; margin-top:16px; line-height:1.05; text-wrap:balance;">{{curName}}</div>
+          <div style="font-size:17px; color:#8A9099; margin-top:6px;">{{curGenre}}</div>
+
+          <div style="margin-top:26px; background:#1B1E22; border:1px solid #262A30; border-radius:18px; padding:18px 20px; display:flex; align-items:center; gap:16px;">
+            <div style="display:flex; align-items:flex-end; gap:3px; height:20px; flex:none;">
+              <div style="width:3px; height:50%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite;"></div>
+              <div style="width:3px; height:90%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite .3s;"></div>
+              <div style="width:3px; height:65%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite .55s;"></div>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-size:12px; letter-spacing:.1em; color:#6E7378; font-weight:600;">NOW PLAYING · DLS</div>
+              <div style="font-size:21px; font-weight:500; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{curDls}}</div>
+            </div>
+          </div>
+
+          <div style="margin-top:auto; display:flex; align-items:center; gap:14px;">
+            <button onClick="{{seekPrev}}" style="width:62px; height:62px; flex:none; border-radius:50%; border:1px solid #2A2E34; background:#1B1E22; color:#D6D9DD; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+            </button>
+            <button onClick="{{toggleMute}}" style="width:78px; height:78px; flex:none; border-radius:50%; border:none; background:var(--accent,#3DD2E6); color:#0A1418; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 10px 28px -8px var(--accent,#3DD2E6);">
+              <sc-if value="{{muted}}" hint-placeholder-val="{{false}}"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></sc-if>
+              <sc-if value="{{playing}}" hint-placeholder-val="{{true}}"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></sc-if>
+            </button>
+            <button onClick="{{seekNext}}" style="width:62px; height:62px; flex:none; border-radius:50%; border:1px solid #2A2E34; background:#1B1E22; color:#D6D9DD; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+            </button>
+            <div style="width:1px; height:42px; background:#2A2E34; margin:0 4px;"></div>
+            <button onClick="{{toggleFavCur}}" style="width:62px; height:62px; flex:none; border-radius:50%; border:1px solid #2A2E34; background:#1B1E22; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <sc-if value="{{isFavCur}}" hint-placeholder-val="{{false}}"><svg width="26" height="26" viewBox="0 0 24 24" fill="var(--accent,#3DD2E6)" stroke="var(--accent,#3DD2E6)" stroke-width="1.5" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></sc-if>
+              <sc-if value="{{notFavCur}}" hint-placeholder-val="{{true}}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8A9099" stroke-width="1.8" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></sc-if>
+            </button>
+            <button onClick="{{startScan}}" style="height:62px; flex:none; border-radius:31px; border:1px solid color-mix(in srgb, var(--accent,#3DD2E6) 55%, transparent); background:color-mix(in srgb, var(--accent,#3DD2E6) 12%, transparent); color:var(--accent,#3DD2E6); cursor:pointer; display:flex; align-items:center; gap:9px; padding:0 22px; font-family:inherit; font-size:16px; font-weight:600;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+              Scan
+            </button>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ===== BROWSE ===== -->
+      <sc-if value="{{isBrowse}}" hint-placeholder-val="{{false}}">
+      <div style="position:absolute; inset:0; overflow-y:auto; padding:24px 34px 36px;">
+        <div style="display:flex; align-items:center; margin-bottom:18px;">
+          <div style="font-size:14px; color:#8A9099;">{{browseSubtitle}}</div>
+          <div style="flex:1;"></div>
+          <button onClick="{{startScan}}" style="height:46px; border-radius:23px; border:1px solid color-mix(in srgb, var(--accent,#3DD2E6) 55%, transparent); background:color-mix(in srgb, var(--accent,#3DD2E6) 12%, transparent); color:var(--accent,#3DD2E6); cursor:pointer; display:flex; align-items:center; gap:9px; padding:0 20px; font-family:inherit; font-size:15px; font-weight:600;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            Scan band
+          </button>
+        </div>
+
+        <sc-if value="{{scanning}}" hint-placeholder-val="{{false}}">
+        <div style="background:color-mix(in srgb, var(--accent,#3DD2E6) 11%, #1B1E22); border:1px solid color-mix(in srgb, var(--accent,#3DD2E6) 45%, transparent); border-radius:18px; padding:18px 22px; margin-bottom:22px; display:flex; align-items:center; gap:20px;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent,#3DD2E6)" stroke-width="2.4" stroke-linecap="round" style="animation:spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg>
+          <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; font-size:14px; color:#C4C8CE; margin-bottom:10px;"><span>{{scanLabel}}</span><span style="font-family:'DM Mono',monospace; color:var(--accent,#3DD2E6);">{{scanReadout}}</span></div>
+            <div style="height:6px; background:#2A2E33; border-radius:3px; overflow:hidden;"><div style="height:100%; width:{{scanProgressStr}}; background:var(--accent,#3DD2E6); border-radius:3px;"></div></div>
+            <div style="font-size:13px; color:#8A9099; margin-top:9px;">{{foundCount}} stations found</div>
+          </div>
+          <button onClick="{{cancelScan}}" style="height:42px; border-radius:21px; border:1px solid #3A3E44; background:transparent; color:#C4C8CE; cursor:pointer; padding:0 20px; font-family:inherit; font-size:15px; font-weight:600;">Stop</button>
+        </div>
+        </sc-if>
+
+        <!-- DAB ensembles -->
+        <sc-if value="{{isDAB}}" hint-placeholder-val="{{true}}">
+        <sc-for list="{{ensembles}}" as="ens" hint-placeholder-count="3">
+          <div style="margin-bottom:22px;">
+            <div style="display:flex; align-items:center; gap:12px; padding:0 4px 11px;">
+              <div style="font-size:13px; font-weight:700; letter-spacing:.07em; color:#C4C8CE;">{{ens.name}}</div>
+              <div style="font-size:13px; color:#6E7378; font-family:'DM Mono',monospace;">{{ens.mux}}</div>
+              <div style="flex:1;"></div>
+              {{ens.signalEl}}
+            </div>
+            <div style="background:#1B1E22; border:1px solid #262A30; border-radius:18px; overflow:hidden;">
+              <sc-for list="{{ens.services}}" as="svc" hint-placeholder-count="4">
+                <button onClick="{{svc.onSelect}}" style="{{svc.rowStyle}}">
+                  <div style="width:46px; height:46px; flex:none; border-radius:11px; background:{{svc.color}}; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#fff;">{{svc.logo}}</div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:9px; font-size:17px; font-weight:600; color:{{svc.nameColor}};">
+                      <span style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{svc.name}}</span>
+                      <sc-if value="{{svc.active}}" hint-placeholder-val="{{false}}">
+                        <div style="display:flex; align-items:flex-end; gap:2px; height:14px; flex:none;">
+                          <div style="width:3px; height:50%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite;"></div>
+                          <div style="width:3px; height:90%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite .3s;"></div>
+                          <div style="width:3px; height:65%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite .55s;"></div>
+                        </div>
+                      </sc-if>
+                    </div>
+                    <div style="font-size:13px; color:#8A9099; margin-top:2px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{svc.genre}} · {{svc.dls}}</div>
+                  </div>
+                  <span onClick="{{svc.onFav}}" style="width:42px; height:42px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                    <sc-if value="{{svc.isFav}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--accent,#3DD2E6)" stroke="var(--accent,#3DD2E6)" stroke-width="1.5" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></sc-if>
+                    <sc-if value="{{svc.notFav}}" hint-placeholder-val="{{true}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E7378" stroke-width="1.8" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></sc-if>
+                  </span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        </sc-if>
+
+        <!-- FM dial + list -->
+        <sc-if value="{{isFM}}" hint-placeholder-val="{{false}}">
+        <div style="background:#1B1E22; border:1px solid #262A30; border-radius:20px; padding:22px 26px 30px; margin-bottom:22px;">
+          <div style="text-align:center; font-family:'DM Mono',monospace; color:var(--accent,#3DD2E6); margin-bottom:18px;">
+            <span style="font-size:54px; letter-spacing:-1px;">{{fmBigFreq}}</span><span style="font-size:18px; color:#8A9099; margin-left:8px;">MHz</span>
+          </div>
+          <div style="position:relative; height:62px; margin:0 6px;">
+            <div style="position:absolute; left:0; right:0; top:30px; height:2px; background:#2E333A;"></div>
+            <sc-for list="{{ticks}}" as="t" hint-placeholder-count="11">
+              <div style="position:absolute; top:{{t.top}}; left:{{t.pos}}; width:1px; height:{{t.h}}; background:#3A3F46; transform:translateX(-0.5px);"></div>
+              <sc-if value="{{t.major}}" hint-placeholder-val="{{false}}"><div style="position:absolute; top:42px; left:{{t.pos}}; transform:translateX(-50%); font-size:11px; color:#6E7378; font-family:'DM Mono',monospace;">{{t.label}}</div></sc-if>
+            </sc-for>
+            <sc-for list="{{fmMarkers}}" as="m" hint-placeholder-count="6">
+              <div style="position:absolute; top:22px; left:{{m.pos}}; width:8px; height:8px; border-radius:50%; background:{{m.color}}; transform:translateX(-50%); box-shadow:0 0 0 3px #1B1E22;"></div>
+            </sc-for>
+            <div style="position:absolute; top:6px; bottom:14px; left:{{needlePos}}; width:2px; background:var(--accent,#3DD2E6); transform:translateX(-1px); box-shadow:0 0 10px var(--accent,#3DD2E6);"></div>
+            <div style="position:absolute; top:0; left:{{needlePos}}; transform:translateX(-50%); width:13px; height:13px; border-radius:50%; background:var(--accent,#3DD2E6); box-shadow:0 0 10px var(--accent,#3DD2E6);"></div>
+          </div>
+        </div>
+        <div style="background:#1B1E22; border:1px solid #262A30; border-radius:18px; overflow:hidden;">
+          <sc-for list="{{fmList}}" as="svc" hint-placeholder-count="6">
+            <button onClick="{{svc.onSelect}}" style="{{svc.rowStyle}}">
+              <div style="width:64px; flex:none; font-family:'DM Mono',monospace; font-size:18px; color:{{svc.nameColor}};">{{svc.freqStr}}</div>
+              <div style="width:46px; height:46px; flex:none; border-radius:11px; background:{{svc.color}}; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#fff;">{{svc.logo}}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="display:flex; align-items:center; gap:9px; font-size:17px; font-weight:600; color:{{svc.nameColor}};">
+                  <span style="overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{svc.name}}</span>
+                  <sc-if value="{{svc.active}}" hint-placeholder-val="{{false}}">
+                    <div style="display:flex; align-items:flex-end; gap:2px; height:14px; flex:none;">
+                      <div style="width:3px; height:50%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite;"></div>
+                      <div style="width:3px; height:90%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite .3s;"></div>
+                      <div style="width:3px; height:65%; background:var(--accent,#3DD2E6); border-radius:2px; animation:eqb .9s ease-in-out infinite .55s;"></div>
+                    </div>
+                  </sc-if>
+                </div>
+                <div style="font-size:13px; color:#8A9099; margin-top:2px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{svc.genre}} · {{svc.dls}}</div>
+              </div>
+              {{svc.signalEl}}
+              <span onClick="{{svc.onFav}}" style="width:42px; height:42px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-left:6px;">
+                <sc-if value="{{svc.isFav}}" hint-placeholder-val="{{false}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="var(--accent,#3DD2E6)" stroke="var(--accent,#3DD2E6)" stroke-width="1.5" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></sc-if>
+                <sc-if value="{{svc.notFav}}" hint-placeholder-val="{{true}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6E7378" stroke-width="1.8" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></sc-if>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <!-- ===== FAVORITES ===== -->
+      <sc-if value="{{isFav}}" hint-placeholder-val="{{false}}">
+      <div style="position:absolute; inset:0; overflow-y:auto; padding:28px 34px 36px;">
+        <sc-if value="{{favEmpty}}" hint-placeholder-val="{{false}}">
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:380px; color:#6E7378; gap:14px;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3A3F46" stroke-width="1.5" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <div style="font-size:17px;">No favorites yet — tap the star on any station.</div>
+          </div>
+        </sc-if>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px;">
+          <sc-for list="{{favList}}" as="f" hint-placeholder-count="4">
+            <button onClick="{{f.onClick}}" style="{{f.cardStyle}}">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="width:54px; height:54px; border-radius:13px; background:{{f.color}}; display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:700; color:#fff;">{{f.logo}}</div>
+                <span onClick="{{f.onRemove}}" style="width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:-6px -6px 0 0;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--accent,#3DD2E6)" stroke="var(--accent,#3DD2E6)" stroke-width="1.5" stroke-linejoin="round"><path d="M12 17.3l6.18 3.7-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </span>
+              </div>
+              <div style="font-size:18px; font-weight:600; margin-top:14px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:{{f.nameColor}};">{{f.name}}</div>
+              <div style="display:flex; align-items:center; gap:9px; margin-top:8px;">
+                <span style="font-size:11px; font-weight:700; letter-spacing:.04em; padding:3px 8px; border-radius:6px; background:{{f.chipBg}}; color:{{f.chipColor}};">{{f.bandLabel}}</span>
+                <span style="font-size:13px; color:#8A9099; font-family:'DM Mono',monospace;">{{f.sub}}</span>
+                <div style="flex:1;"></div>
+                {{f.signalEl}}
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ===== SETTINGS ===== -->
+      <sc-if value="{{isSettings}}" hint-placeholder-val="{{false}}">
+      <div style="position:absolute; inset:0; overflow-y:auto; padding:28px 34px 36px;">
+        <div style="max-width:780px;">
+          <sc-for list="{{settings}}" as="s" hint-placeholder-count="5">
+            <div style="display:flex; align-items:center; gap:20px; background:#1B1E22; border:1px solid #262A30; border-radius:16px; padding:18px 22px; margin-bottom:12px;">
+              <div style="width:40px; height:40px; flex:none; border-radius:11px; background:#23272D; display:flex; align-items:center; justify-content:center; color:#9BA0A6;">{{s.icon}}</div>
+              <div style="flex:1;">
+                <div style="font-size:17px; font-weight:600;">{{s.label}}</div>
+                <div style="font-size:14px; color:#8A9099; margin-top:3px;">{{s.desc}}</div>
+              </div>
+              <button onClick="{{s.onToggle}}" style="{{s.trackStyle}}">
+                <div style="width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
+              </button>
+            </div>
+          </sc-for>
+          <div style="display:flex; align-items:center; gap:20px; background:#1B1E22; border:1px solid #262A30; border-radius:16px; padding:18px 22px; margin-top:4px;">
+            <div style="width:40px; height:40px; flex:none; border-radius:11px; background:#23272D; display:flex; align-items:center; justify-content:center; color:#9BA0A6;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:17px; font-weight:600;">Region &amp; tuner</div>
+              <div style="font-size:14px; color:#8A9099; margin-top:3px;">DAB Band III · FM 87.5–108.0 MHz · Europe</div>
+            </div>
+            <span style="font-size:14px; color:#6E7378; font-family:'DM Mono',monospace;">v3.2.1</span>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+
+    <!-- ===== PERSISTENT NOW-PLAYING BAR ===== -->
+    <sc-if value="{{showMiniBar}}" hint-placeholder-val="{{false}}">
+    <div style="height:84px; flex:none; border-top:1px solid #21252A; background:#15171B; display:flex; align-items:center; gap:16px; padding:0 20px 0 16px;">
+      <button onClick="{{goNow}}" style="flex:1; min-width:0; display:flex; align-items:center; gap:15px; border:none; background:transparent; cursor:pointer; text-align:left; font-family:inherit; padding:0;">
+        <div style="width:54px; height:54px; flex:none; border-radius:13px; background:linear-gradient(150deg, color-mix(in srgb, {{curColor}} 90%, #fff), color-mix(in srgb, {{curColor}} 40%, #000)); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#fff;">{{curLogo}}</div>
+        <div style="min-width:0;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:11px; font-weight:700; letter-spacing:.05em; padding:3px 9px; border-radius:7px; background:color-mix(in srgb, var(--accent,#3DD2E6) 18%, transparent); color:var(--accent,#3DD2E6);">{{curBandLabel}}</span>
+            <span style="font-size:19px; font-weight:600; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:#EAEBEE;">{{curName}}</span>
+          </div>
+          <div style="font-size:14px; color:#8A9099; margin-top:3px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">{{curDls}}</div>
+        </div>
+      </button>
+      <button onClick="{{seekPrev}}" style="width:56px; height:56px; flex:none; border-radius:50%; border:1px solid #2A2E34; background:#1B1E22; color:#D6D9DD; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <button onClick="{{toggleMute}}" style="width:64px; height:64px; flex:none; border-radius:50%; border:none; background:var(--accent,#3DD2E6); color:#0A1418; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <sc-if value="{{muted}}" hint-placeholder-val="{{false}}"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></sc-if>
+        <sc-if value="{{playing}}" hint-placeholder-val="{{true}}"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg></sc-if>
+      </button>
+      <button onClick="{{seekNext}}" style="width:56px; height:56px; flex:none; border-radius:50%; border:1px solid #2A2E34; background:#1B1E22; color:#D6D9DD; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+      </button>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:720},&quot;defaultBand&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;DAB&quot;,&quot;FM&quot;],&quot;default&quot;:&quot;DAB&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;neonGlow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.CYAN = '#3DD2E6';
+    this.AMBER = '#FFB454';
+
+    this.ensemblesData = [
+      { id:'bbc', name:'BBC National DAB', mux:'12B · 225.648', signal:4, services:[
+        { id:'r1', name:'BBC Radio 1', logo:'R1', color:'#E8344E', genre:'Pop / Contemporary', dls:'Dua Lipa – Houdini', signal:4 },
+        { id:'r2', name:'BBC Radio 2', logo:'R2', color:'#1E9BD7', genre:'Adult Contemporary', dls:'Elton John – Rocket Man', signal:4 },
+        { id:'r4', name:'BBC Radio 4', logo:'R4', color:'#B23B2E', genre:'Speech / News', dls:'The Today Programme', signal:3 },
+        { id:'r6', name:'BBC Radio 6 Music', logo:'6M', color:'#159A82', genre:'Alternative', dls:'IDLES – Dancer', signal:4 },
+        { id:'x1', name:'BBC 1Xtra', logo:'1X', color:'#8E44AD', genre:'Hip-Hop / R&B', dls:'Stormzy – Vossi Bop', signal:3 },
+      ]},
+      { id:'sound', name:'Sound Digital', mux:'11A · 216.928', signal:3, services:[
+        { id:'abs', name:'Absolute Radio', logo:'Ab', color:'#E67E22', genre:'Rock', dls:'Foo Fighters – Everlong', signal:3 },
+        { id:'kiss', name:'Kisstory', logo:'Ks', color:'#D81B60', genre:'Old Skool Anthems', dls:'Robin S – Show Me Love', signal:3 },
+        { id:'times', name:'Times Radio', logo:'Ti', color:'#0B3D5C', genre:'News / Talk', dls:'Morning Edition', signal:2 },
+        { id:'virgin', name:'Virgin Radio', logo:'Vr', color:'#C0144A', genre:'Pop / Rock', dls:'Coldplay – Yellow', signal:3 },
+      ]},
+      { id:'d1', name:'Digital One', mux:'11D · 222.064', signal:4, services:[
+        { id:'classic', name:'Classic FM', logo:'Cl', color:'#2C5F8A', genre:'Classical', dls:'Einaudi – Nuvole Bianche', signal:4 },
+        { id:'capital', name:'Capital', logo:'Ca', color:'#E6007E', genre:'Top 40 / Dance', dls:'David Guetta – Titanium', signal:4 },
+        { id:'heart', name:'Heart', logo:'He', color:'#E2231A', genre:'Adult Pop', dls:'Adele – Easy On Me', signal:3 },
+        { id:'smooth', name:'Smooth Radio', logo:'Sm', color:'#5B2C83', genre:'Easy Listening', dls:'Sade – Smooth Operator', signal:3 },
+        { id:'talk', name:'talkSPORT', logo:'tS', color:'#1C2E5A', genre:'Sport / Talk', dls:'Drive – Premier League', signal:2 },
+      ]},
+    ];
+
+    this.fmData = [
+      { id:'fm1', name:'BBC Radio 2', logo:'R2', freq:88.6, color:'#1E9BD7', genre:'Adult Contemporary', dls:'Elton John – Rocket Man', signal:4 },
+      { id:'fm2', name:'LBC', logo:'LB', freq:97.3, color:'#B71C1C', genre:'News / Talk', dls:'Nick Ferrari at Breakfast', signal:3 },
+      { id:'fm3', name:'Capital FM', logo:'Ca', freq:95.8, color:'#E6007E', genre:'Top 40', dls:'Dua Lipa – Houdini', signal:3 },
+      { id:'fm4', name:'Kiss', logo:'Ks', freq:100.0, color:'#D81B60', genre:'Dance', dls:'Calvin Harris – One Kiss', signal:2 },
+      { id:'fm5', name:'Classic FM', logo:'Cl', freq:100.9, color:'#2C5F8A', genre:'Classical', dls:'Einaudi – Nuvole Bianche', signal:4 },
+      { id:'fm6', name:'Magic', logo:'Mg', freq:105.4, color:'#7B1FA2', genre:'Soft Pop', dls:'George Michael – Faith', signal:3 },
+      { id:'fm7', name:'Absolute Radio', logo:'Ab', freq:105.8, color:'#E67E22', genre:'Rock', dls:'Foo Fighters – Everlong', signal:3 },
+      { id:'fm8', name:'Heart London', logo:'He', freq:106.2, color:'#E2231A', genre:'Adult Pop', dls:'Adele – Easy On Me', signal:2 },
+    ];
+    this.fmData.sort((a,b)=>a.freq-b.freq);
+
+    this.dabOrder = [];
+    this.ensemblesData.forEach(e=>e.services.forEach(s=>this.dabOrder.push(s.id)));
+    this.fmOrder = this.fmData.map(s=>s.id);
+
+    this.state = {
+      screen: 'now',
+      band: (this.props && this.props.defaultBand) || 'DAB',
+      curDab: 'r6',
+      curFm: 'fm5',
+      muted: false,
+      favs: ['DAB:r6','DAB:capital','FM:fm5','DAB:classic'],
+      scanning: false,
+      scanProgress: 0,
+      scanFreq: 87.5,
+      foundIds: null,
+      settings: {
+        following: true,
+        slideshow: true,
+        rds: true,
+        traffic: false,
+        announce: true,
+      },
+    };
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._iv);
+  }
+
+  accent() { return this.state.band === 'DAB' ? this.CYAN : this.AMBER; }
+
+  dab(id) { for (const e of this.ensemblesData) { const s = e.services.find(x=>x.id===id); if (s) return { s, e }; } return { s:null, e:null }; }
+  fm(id) { return this.fmData.find(x=>x.id===id) || null; }
+
+  cur() {
+    if (this.state.band === 'DAB') { const { s, e } = this.dab(this.state.curDab); return { st:s, ens:e }; }
+    return { st:this.fm(this.state.curFm), ens:null };
+  }
+
+  sigEl(level, faded) {
+    const on = faded ? '#5A6066' : this.accent();
+    const hs = [9,13,17,22];
+    return React.createElement('div', { style:{ display:'flex', alignItems:'flex-end', gap:3, height:22 } },
+      hs.map((h,i)=>React.createElement('div', { key:i, style:{ width:4, height:h, borderRadius:2, background: i<level ? on : '#363B41' } })));
+  }
+
+  go(screen) { this.setState({ screen }); }
+  goNow = () => this.go('now');
+  goBrowse = () => this.go('browse');
+  goFav = () => this.go('favorites');
+  goSettings = () => this.go('settings');
+
+  setBand(band) { this.cancelScan(); this.setState({ band }); }
+
+  select(band, id) {
+    this.cancelScan();
+    const patch = { band, screen:'now', muted:false };
+    if (band === 'DAB') patch.curDab = id; else patch.curFm = id;
+    this.setState(patch);
+  }
+
+  toggleMute = () => this.setState(s=>({ muted: !s.muted }));
+
+  seek(dir) {
+    if (this.state.band === 'DAB') {
+      const i = this.dabOrder.indexOf(this.state.curDab);
+      const n = (i + dir + this.dabOrder.length) % this.dabOrder.length;
+      this.setState({ curDab: this.dabOrder[n] });
+    } else {
+      const i = this.fmOrder.indexOf(this.state.curFm);
+      const n = (i + dir + this.fmOrder.length) % this.fmOrder.length;
+      this.setState({ curFm: this.fmOrder[n] });
+    }
+  }
+  seekPrev = () => this.seek(-1);
+  seekNext = () => this.seek(1);
+
+  curKey() { return this.state.band + ':' + (this.state.band==='DAB'?this.state.curDab:this.state.curFm); }
+  isFav(key) { return this.state.favs.includes(key); }
+  toggleFav(key) {
+    this.setState(s=>({ favs: s.favs.includes(key) ? s.favs.filter(k=>k!==key) : [...s.favs, key] }));
+  }
+  toggleFavCur = () => this.toggleFav(this.curKey());
+
+  startScan = () => {
+    clearInterval(this._iv);
+    const fm = this.state.band === 'FM';
+    this.setState({ screen:'browse', scanning:true, scanProgress:0, foundIds:[], scanFreq: fm ? 87.5 : 0 });
+    if (fm) {
+      this._iv = setInterval(()=>{
+        this.setState(prev=>{
+          let f = prev.scanFreq + 0.45;
+          const found = [...prev.foundIds];
+          this.fmData.forEach(s=>{ if (s.freq > prev.scanFreq && s.freq <= f && !found.includes(s.id)) found.push(s.id); });
+          const prog = Math.min(100, ((f - 87.5) / 20.5) * 100);
+          if (f >= 108) { clearInterval(this._iv); return { scanning:false, foundIds:this.fmOrder.slice(), scanProgress:100, scanFreq:108 }; }
+          return { scanFreq:f, foundIds:found, scanProgress:prog };
+        });
+      }, 55);
+    } else {
+      this._iv = setInterval(()=>{
+        this.setState(prev=>{
+          const prog = prev.scanProgress + 5;
+          const count = Math.floor(prog / 100 * this.dabOrder.length);
+          if (prog >= 100) { clearInterval(this._iv); return { scanning:false, foundIds:this.dabOrder.slice(), scanProgress:100 }; }
+          return { scanProgress:prog, foundIds:this.dabOrder.slice(0, count) };
+        });
+      }, 130);
+    }
+  };
+  cancelScan = () => { clearInterval(this._iv); this.setState({ scanning:false, foundIds:null }); };
+
+  revealed(id) { return this.state.foundIds ? this.state.foundIds.includes(id) : true; }
+
+  resolveFav(key) {
+    const [band, id] = key.split(':');
+    if (band === 'DAB') { const { s } = this.dab(id); return s ? { band, st:s } : null; }
+    const st = this.fm(id); return st ? { band, st } : null;
+  }
+
+  dialPos(freq) { return ((freq - 87.5) / 20.5) * 100 + '%'; }
+
+  toggleSetting(k) { this.setState(s=>({ settings: { ...s.settings, [k]: !s.settings[k] } })); }
+
+  fmt2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  renderVals() {
+    const st = this.state;
+    const accent = this.accent();
+    const isDAB = st.band === 'DAB';
+    const { st:curSt, ens:curEns } = this.cur();
+    const navColor = a => a ? 'var(--accent,#3DD2E6)' : '#8A9099';
+
+    const glow = this.props && this.props.neonGlow;
+    const artShadow = glow ? '0 0 70px -8px var(--accent,#3DD2E6), 0 18px 40px -20px #000' : '0 18px 40px -18px #000';
+
+    // band tabs
+    const tab = (sel, fm) => sel
+      ? { padding:'8px 22px', borderRadius:'10px', border:'none', cursor:'pointer', fontSize:'16px', fontWeight:600, fontFamily:'inherit', background: fm ? this.AMBER : this.CYAN, color: fm ? '#2A1A00' : '#08222A' }
+      : { padding:'8px 22px', borderRadius:'10px', border:'none', cursor:'pointer', fontSize:'16px', fontWeight:600, fontFamily:'inherit', background:'transparent', color:'#9BA0A6' };
+
+    // presets
+    const presets = [];
+    for (let i = 0; i < 6; i++) {
+      const key = st.favs[i];
+      const base = { height:'52px', borderRadius:'12px', border:'1px solid #262A30', cursor:'pointer', display:'flex', alignItems:'center', gap:'8px', padding:'0 11px', fontFamily:'inherit', background:'#1A1D21', overflow:'hidden' };
+      if (key) {
+        const r = this.resolveFav(key);
+        const active = key === this.curKey();
+        presets.push({
+          filled:true, empty:false, num:i+1,
+          logo: r ? r.st.logo : '', color: r ? r.st.color : '#333', name: r ? r.st.name : '',
+          nameColor: active ? 'var(--accent,#3DD2E6)' : '#D6D9DD',
+          onClick: r ? () => this.select(r.band, r.st.id) : (()=>{}),
+          style: active ? { ...base, border:'1px solid var(--accent,#3DD2E6)', background:'color-mix(in srgb, var(--accent,#3DD2E6) 12%, #1A1D21)' } : base,
+        });
+      } else {
+        presets.push({ filled:false, empty:true, num:i+1, style:{ ...base, border:'1px dashed #33383F', background:'transparent' }, onClick:this.goBrowse, logo:'', color:'', name:'', nameColor:'' });
+      }
+    }
+
+    // browse rows
+    const rowStyle = (active) => ({ width:'100%', display:'flex', alignItems:'center', gap:'15px', padding:'13px 18px', border:'none', borderTop:'1px solid #23272D', cursor:'pointer', textAlign:'left', fontFamily:'inherit', background: active ? 'color-mix(in srgb, var(--accent,#3DD2E6) 10%, transparent)' : 'transparent' });
+
+    const ensembles = this.ensemblesData.map(e => {
+      const services = e.services.filter(s => this.revealed(s.id)).map(s => {
+        const active = isDAB && s.id === st.curDab;
+        const key = 'DAB:' + s.id;
+        const fav = this.isFav(key);
+        return {
+          ...s, active, isFav:fav, notFav:!fav,
+          nameColor: active ? 'var(--accent,#3DD2E6)' : '#EAEBEE',
+          rowStyle: rowStyle(active),
+          onSelect: () => this.select('DAB', s.id),
+          onFav: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.toggleFav(key); },
+        };
+      });
+      return { name:e.name, mux:e.mux, signalEl:this.sigEl(e.signal), services };
+    }).filter(e => e.services.length > 0);
+
+    const fmList = this.fmData.filter(s => this.revealed(s.id)).map(s => {
+      const active = !isDAB && s.id === st.curFm;
+      const key = 'FM:' + s.id;
+      const fav = this.isFav(key);
+      return {
+        ...s, active, isFav:fav, notFav:!fav,
+        freqStr: s.freq.toFixed(1),
+        nameColor: active ? 'var(--accent,#3DD2E6)' : '#EAEBEE',
+        rowStyle: rowStyle(active),
+        signalEl: this.sigEl(s.signal),
+        onSelect: () => this.select('FM', s.id),
+        onFav: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.toggleFav(key); },
+      };
+    });
+
+    // FM dial
+    const ticks = [];
+    for (let f = 88; f <= 108; f += 1) {
+      const major = f % 4 === 0;
+      ticks.push({ pos:((f - 87.5) / 20.5 * 100) + '%', top: major ? '20px' : '25px', h: major ? '20px' : '12px', major, label:String(f) });
+    }
+    const fmMarkers = this.fmData.map(s => ({ pos:this.dialPos(s.freq), color:s.color, active:s.id===st.curFm }));
+    const curFm = this.fm(st.curFm);
+    const needleFreq = st.scanning && !isDAB ? st.scanFreq : (curFm ? curFm.freq : 98);
+    const needlePos = this.dialPos(needleFreq);
+    const fmBigFreq = (st.scanning && !isDAB ? st.scanFreq : (curFm ? curFm.freq : 98)).toFixed(1);
+
+    // favorites
+    const chip = (band) => band === 'DAB'
+      ? { bg:'color-mix(in srgb,#3DD2E6 18%,transparent)', color:'#3DD2E6' }
+      : { bg:'color-mix(in srgb,#FFB454 18%,transparent)', color:'#FFB454' };
+    const favList = st.favs.map(key => {
+      const r = this.resolveFav(key);
+      if (!r) return null;
+      const c = chip(r.band);
+      return {
+        logo:r.st.logo, color:r.st.color, name:r.st.name,
+        nameColor: key===this.curKey() ? 'var(--accent,#3DD2E6)' : '#EAEBEE',
+        bandLabel: r.band === 'DAB' ? 'DAB+' : 'FM',
+        chipBg:c.bg, chipColor:c.color,
+        sub: r.band === 'DAB' ? r.st.genre.split(' / ')[0] : r.st.freq.toFixed(1),
+        signalEl: this.sigEl(r.st.signal),
+        cardStyle: { background:'#1B1E22', border: key===this.curKey()?'1px solid var(--accent,#3DD2E6)':'1px solid #262A30', borderRadius:'18px', padding:'18px', cursor:'pointer', textAlign:'left', fontFamily:'inherit', display:'flex', flexDirection:'column' },
+        onClick: () => this.select(r.band, r.st.id),
+        onRemove: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.toggleFav(key); },
+      };
+    }).filter(Boolean);
+
+    // settings
+    const trackStyle = (on) => ({ width:'52px', height:'30px', borderRadius:'16px', border:'none', cursor:'pointer', padding:'3px', display:'flex', justifyContent: on?'flex-end':'flex-start', alignItems:'center', background: on ? 'var(--accent,#3DD2E6)' : '#3A3E44', transition:'all .15s' });
+    const ic = (path) => React.createElement('svg', { width:22, height:22, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round' }, React.createElement('path', { d:path }));
+    const sset = this.state.settings;
+    const settings = [
+      { key:'following', label:'Service following (DAB ↔ FM)', desc:'Automatically re-tune to the strongest source for the current station.', icon:ic('M4 4v6h6M20 20v-6h-6M20 8a8 8 0 0 0-15-2M4 16a8 8 0 0 0 15 2') },
+      { key:'announce', label:'Station logos & slideshow', desc:'Show DAB slideshow images and station logos when broadcast.', icon:ic('M3 5h18v14H3zM3 15l5-5 4 4 3-3 6 6') },
+      { key:'rds', label:'FM RDS text & alternate frequency', desc:'Display RDS radio text and follow AF for the best FM reception.', icon:ic('M4 11h16v8H4zM16 4 7 9') },
+      { key:'traffic', label:'Traffic announcements (TA)', desc:'Interrupt playback for live traffic and travel news bulletins.', icon:ic('M12 2 2 7l10 5 10-5zM2 17l10 5 10-5M2 12l10 5 10-5') },
+      { key:'slideshow', label:'Keep DLS metadata on lock', desc:'Persist now-playing track and artist info across the cluster display.', icon:ic('M4 4h16v12H4zM2 20h20') },
+    ].map(s => ({ ...s, onToggle: () => this.toggleSetting(s.key), trackStyle: trackStyle(sset[s.key]) }));
+
+    const titles = { now:'Now Playing', browse:'Browse Stations', favorites:'Favorites', settings:'Settings' };
+    const isFavCur = this.isFav(this.curKey());
+
+    return {
+      accent,
+      topSignalEl: this.sigEl(curSt ? curSt.signal : 3),
+      screenTitle: titles[st.screen],
+
+      isNow: st.screen==='now', isBrowse: st.screen==='browse', isFav: st.screen==='favorites', isSettings: st.screen==='settings',
+      showMiniBar: st.screen !== 'now',
+      isDAB, isFM: !isDAB,
+
+      navNowActive: st.screen==='now', navBrowseActive: st.screen==='browse', navFavActive: st.screen==='favorites', navSetActive: st.screen==='settings',
+      navNowColor: navColor(st.screen==='now'), navBrowseColor: navColor(st.screen==='browse'), navFavColor: navColor(st.screen==='favorites'), navSetColor: navColor(st.screen==='settings'),
+      goNow:this.goNow, goBrowse:this.goBrowse, goFav:this.goFav, goSettings:this.goSettings,
+
+      setDAB: () => this.setBand('DAB'), setFM: () => this.setBand('FM'),
+      dabTabStyle: tab(isDAB, false), fmTabStyle: tab(!isDAB, true),
+
+      // now playing
+      artShadow,
+      curColor: curSt ? curSt.color : '#333',
+      curLogo: curSt ? curSt.logo : '',
+      curName: curSt ? curSt.name : '',
+      curGenre: curSt ? curSt.genre : '',
+      curDls: curSt ? curSt.dls : '',
+      curBandLabel: isDAB ? 'DAB+' : 'FM',
+      curSub: isDAB ? (curEns ? curEns.name : '') : (curSt ? curSt.freq.toFixed(1) + ' MHz' : ''),
+      curSignalEl: this.sigEl(curSt ? curSt.signal : 3),
+      muted: st.muted, playing: !st.muted,
+      toggleMute:this.toggleMute, seekPrev:this.seekPrev, seekNext:this.seekNext,
+      isFavCur, notFavCur:!isFavCur, toggleFavCur:this.toggleFavCur, startScan:this.startScan,
+      presets,
+
+      // browse
+      browseSubtitle: isDAB ? this.dabOrder.length + ' DAB+ services across ' + this.ensemblesData.length + ' ensembles' : this.fmData.length + ' FM stations · 87.5–108.0 MHz',
+      scanning: st.scanning, cancelScan:this.cancelScan,
+      scanLabel: isDAB ? 'Scanning DAB Band III' : 'Scanning FM · 87.5–108.0 MHz',
+      scanReadout: isDAB ? Math.round(st.scanProgress) + '%' : st.scanFreq.toFixed(1) + ' MHz',
+      scanProgressStr: st.scanProgress + '%',
+      foundCount: st.foundIds ? st.foundIds.length : (isDAB ? this.dabOrder.length : this.fmData.length),
+      ensembles, fmList,
+      ticks, fmMarkers, needlePos, fmBigFreq,
+
+      // favorites
+      favList, favEmpty: favList.length === 0,
+
+      // settings
+      settings,
+    };
+  }
+}
+</script>
+</body>
+</html>
