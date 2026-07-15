@@ -70,6 +70,9 @@ public class NowPlayingFragment extends Fragment {
     private View mScan;
     private TextView mScanLabel;
     private ImageView mScanIcon;
+    private View mStatus;
+    private View mStatusSpinner;
+    private TextView mStatusText;
 
     @Nullable private ProgramInfo mCurrent;
     private List<Program> mFavorites;
@@ -106,12 +109,23 @@ public class NowPlayingFragment extends Fragment {
         mScan = v.findViewById(R.id.now_scan);
         mScanLabel = v.findViewById(R.id.now_scan_label);
         mScanIcon = v.findViewById(R.id.now_scan_icon);
+        mStatus = v.findViewById(R.id.now_status);
+        mStatusSpinner = v.findViewById(R.id.now_status_spinner);
+        mStatusText = v.findViewById(R.id.now_status_text);
 
         mPrev.setOnClickListener(x -> mController.skip(false));
         mNext.setOnClickListener(x -> mController.skip(true));
         mPlay.setOnClickListener(x -> mController.setMuted(mPlaying));
         mFav.setOnClickListener(x -> mController.toggleCurrentFavorite());
         mScan.setOnClickListener(x -> mController.seek(true));
+
+        // Touch feedback.
+        UiUtils.addRippleOval(mPrev, UiUtils.ACCENT_DAB);
+        UiUtils.addRippleOval(mPlay, UiUtils.ACCENT_DAB);
+        UiUtils.addRippleOval(mNext, UiUtils.ACCENT_DAB);
+        UiUtils.addRippleOval(mFav, UiUtils.ACCENT_DAB);
+        UiUtils.addRipple(mScan, UiUtils.ACCENT_DAB, dp(31));
+        for (int id : PRESET_IDS) UiUtils.addRipple(v.findViewById(id), UiUtils.ACCENT_DAB, dp(12));
 
         mController.getCurrentProgram().observe(getViewLifecycleOwner(), info -> {
             mCurrent = info;
@@ -126,6 +140,7 @@ public class NowPlayingFragment extends Fragment {
                         || state == PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS);
             bindPlay();
             bindScan();
+            bindStatus();
         });
         mController.getStationArt().observe(getViewLifecycleOwner(), this::bindArt);
         mController.getFavorites().observe(getViewLifecycleOwner(), favs -> {
@@ -171,7 +186,36 @@ public class NowPlayingFragment extends Fragment {
 
         bindPlay();
         bindScan();
+        bindStatus();
         bindPresets();
+    }
+
+    /** Shows a "Tuning…" spinner while acquiring, or "No signal" when a band won't lock. */
+    private void bindStatus() {
+        if (mStatus == null) return;
+        boolean tuning = mSeeking;
+        boolean curIsDab = mCurrent != null
+                && ProgramType.fromSelector(mCurrent.getSelector()) == ProgramType.DAB;
+        boolean noSignal = !mSeeking && selectedBand() == ProgramType.DAB && !curIsDab;
+        if (tuning) {
+            mStatus.setVisibility(View.VISIBLE);
+            mStatusSpinner.setVisibility(View.VISIBLE);
+            mStatusText.setText(R.string.status_tuning);
+        } else if (noSignal) {
+            mStatus.setVisibility(View.VISIBLE);
+            mStatusSpinner.setVisibility(View.GONE);
+            mStatusText.setText(R.string.status_no_signal);
+        } else {
+            mStatus.setVisibility(View.GONE);
+        }
+    }
+
+    @Nullable
+    private ProgramType selectedBand() {
+        if (getActivity() instanceof RadioActivity) {
+            return ((RadioActivity) getActivity()).getCurrentBand();
+        }
+        return mCurrent == null ? null : ProgramType.fromSelector(mCurrent.getSelector());
     }
 
     private void bindPlay() {

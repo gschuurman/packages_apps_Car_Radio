@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -27,12 +28,25 @@ import java.util.List;
 
 /**
  * A horizontal FM tuning dial: a base line with 88–108 MHz ticks (labels every 4 MHz), a dot
- * marker for every scanned station, and an accent needle at the current frequency. Display-only.
+ * marker for every scanned station, and an accent needle at the current frequency. Draggable:
+ * touch/drag scrubs the needle (snapped to 0.1 MHz) and reports the chosen frequency on release.
  */
 public class FmDialView extends View {
     private static final float LOW = 87.5f;
     private static final float HIGH = 108.0f;
     private static final float SPAN = HIGH - LOW;
+
+    /** Reports user scrubbing on the dial. */
+    public interface OnTuneListener {
+        /** Continuous feedback while dragging (update the readout, do not yet tune). */
+        void onScrub(float freqMhz);
+        /** Final frequency chosen on release — tune to it. */
+        void onCommit(float freqMhz);
+    }
+
+    private OnTuneListener mListener;
+    private float mLastPadL;
+    private float mLastUsableW;
 
     private final Paint mLine = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mTick = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -67,6 +81,63 @@ public class FmDialView extends View {
         invalidate();
     }
 
+    public void setOnTuneListener(OnTuneListener l) {
+        mListener = l;
+        setClickable(l != null);
+    }
+
+    /** Snap a raw MHz value to the 0.1 MHz FM grid, clamped to the band. */
+    private static float snap(float mhz) {
+        float v = Math.round(mhz * 10f) / 10f;
+        if (v < 88.0f) v = 88.0f;
+        if (v > 108.0f) v = 108.0f;
+        return v;
+    }
+
+    private float freqForX(float x) {
+        if (mLastUsableW <= 0) return mCurrentFreq;
+        float t = (x - mLastPadL) / mLastUsableW;
+        if (t < 0) t = 0;
+        if (t > 1) t = 1;
+        return snap(LOW + t * SPAN);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (mListener == null) return super.onTouchEvent(ev);
+        switch (ev.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_MOVE: {
+                getParent().requestDisallowInterceptTouchEvent(true);
+                float f = freqForX(ev.getX());
+                mCurrentFreq = f;
+                invalidate();
+                mListener.onScrub(f);
+                return true;
+            }
+            case MotionEvent.ACTION_UP: {
+                float f = freqForX(ev.getX());
+                mCurrentFreq = f;
+                invalidate();
+                mListener.onCommit(f);
+                performClick();
+                getParent().requestDisallowInterceptTouchEvent(false);
+                return true;
+            }
+            case MotionEvent.ACTION_CANCEL:
+                getParent().requestDisallowInterceptTouchEvent(false);
+                return true;
+            default:
+                return super.onTouchEvent(ev);
+        }
+    }
+
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        return true;
+    }
+
     /** Replace the station markers (frequency in MHz + dot color). */
     public void setMarkers(List<float[]> freqs, List<Integer> colors) {
         mMarkers.clear();
@@ -92,6 +163,8 @@ public class FmDialView extends View {
         float padL = 10 * mDensity;
         float usableW = w - 2 * padL;
         float axisY = h * 0.52f;
+        mLastPadL = padL;
+        mLastUsableW = usableW;
 
         // base line
         mLine.setStrokeWidth(2 * mDensity);

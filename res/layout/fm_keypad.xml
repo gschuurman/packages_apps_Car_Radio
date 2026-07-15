@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2026 The LineageOS Project; Apache-2.0. FM frequency keypad. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/ui_bg">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fm_keypad_title"
+        android:textColor="@color/ui_text_faint"
+        android:textSize="@dimen/ui_text_xs"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.1" />
+
+    <TextView
+        android:id="@+id/keypad_display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="—"
+        android:textColor="@color/ui_accent_fm"
+        android:textSize="44dp"
+        android:fontFamily="monospace" />
+
+    <GridLayout
+        android:id="@+id/keypad_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:columnCount="3"
+        android:useDefaultMargins="false" />
+</LinearLayout>

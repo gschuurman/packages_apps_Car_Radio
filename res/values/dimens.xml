@@ -133,4 +133,11 @@ limitations under the License.
     <dimen name="ui_text_sm">19dp</dimen>
     <dimen name="ui_text_xs">17dp</dimen>
 
+    <!-- Band tab touch targets. Panel density is 100 (px = dp * 0.625), so the old
+         22dp/9dp padding rendered as a ~59x29 px target that was hard to hit. -->
+    <dimen name="ui_band_tab_minw">132dp</dimen>
+    <dimen name="ui_band_tab_minh">78dp</dimen>
+    <dimen name="ui_band_tab_padh">34dp</dimen>
+    <dimen name="ui_band_tab_padv">22dp</dimen>
+
 </resources>

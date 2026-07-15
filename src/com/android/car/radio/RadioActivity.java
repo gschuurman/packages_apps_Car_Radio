@@ -125,13 +125,20 @@ public class RadioActivity extends FragmentActivity {
         mBandTabs.setBackground(UiUtils.roundedRect(0xFF1A1D21, dp(13), (int) dp(1), 0xFF262A30));
         mTabDab.setOnClickListener(v -> selectBand(ProgramType.DAB));
         mTabFm.setOnClickListener(v -> selectBand(ProgramType.FM));
+        UiUtils.addRipple(mTabDab, UiUtils.ACCENT_DAB, dp(13));
+        UiUtils.addRipple(mTabFm, UiUtils.ACCENT_FM, dp(13));
 
-        mMiniPlayer.findViewById(R.id.mini_expand).setOnClickListener(v -> showNow());
-        mMiniPlayer.findViewById(R.id.mini_prev)
-                .setOnClickListener(v -> mRadioController.skip(false));
-        mMiniPlayer.findViewById(R.id.mini_next)
-                .setOnClickListener(v -> mRadioController.skip(true));
+        View miniExpand = mMiniPlayer.findViewById(R.id.mini_expand);
+        View miniPrev = mMiniPlayer.findViewById(R.id.mini_prev);
+        View miniNext = mMiniPlayer.findViewById(R.id.mini_next);
+        miniExpand.setOnClickListener(v -> showNow());
+        miniPrev.setOnClickListener(v -> mRadioController.skip(false));
+        miniNext.setOnClickListener(v -> mRadioController.skip(true));
         mMiniPlay.setOnClickListener(v -> mRadioController.setMuted(mPlaying));
+        UiUtils.addRippleOval(miniPrev, UiUtils.ACCENT_DAB);
+        UiUtils.addRippleOval(miniNext, UiUtils.ACCENT_DAB);
+        UiUtils.addRippleOval(mMiniPlay, UiUtils.ACCENT_DAB);
+        UiUtils.addRipple(miniExpand, UiUtils.ACCENT_DAB, dp(12));
 
         mRadioController.getConnectionState().observe(this, this::onConnectionStateChanged);
         mRadioController.getCurrentProgram().observe(this, this::onCurrentProgramChanged);
@@ -151,6 +158,7 @@ public class RadioActivity extends FragmentActivity {
         ((ImageView) c.findViewById(R.id.nav_icon)).setImageResource(iconRes);
         ((TextView) c.findViewById(R.id.nav_label)).setText(labelRes);
         c.setOnClickListener(v -> showScreen(screen));
+        UiUtils.addRipple(c, UiUtils.ACCENT_DAB, dp(14));
     }
 
     // ---- public navigation API used by fragments ----

@@ -100,6 +100,7 @@ public class StationAdapter extends RecyclerView.Adapter<StationAdapter.Holder> 
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.station_row, parent, false);
+        UiUtils.addRipple(v, UiUtils.ACCENT_DAB, dp(v, 14));
         return new Holder(v);
     }
 

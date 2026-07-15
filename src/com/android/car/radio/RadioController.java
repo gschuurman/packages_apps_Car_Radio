@@ -29,6 +29,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.android.car.broadcastradio.support.Program;
 import com.android.car.broadcastradio.support.platform.ProgramInfoExt;
+import com.android.car.broadcastradio.support.platform.ProgramSelectorExt;
 import com.android.car.radio.bands.ProgramType;
 import com.android.car.radio.bands.RegionConfig;
 import com.android.car.radio.platform.RadioManagerExt;
@@ -186,6 +187,11 @@ public class RadioController {
 
     public void tune(ProgramSelector sel) {
         mAppService.tune(sel);
+    }
+
+    /** Manually tunes the FM band to an exact frequency in kHz (e.g. 98500 for 98.5 MHz). */
+    public void tuneFmFrequency(int freqKhz) {
+        mAppService.tune(ProgramSelectorExt.createAmFmSelector(freqKhz));
     }
 
     public void step(boolean forward) {

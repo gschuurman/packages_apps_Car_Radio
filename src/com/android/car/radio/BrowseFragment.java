@@ -16,11 +16,15 @@
 
 package com.android.car.radio;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.hardware.radio.RadioManager.ProgramInfo;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,6 +60,14 @@ public class BrowseFragment extends Fragment {
     private SignalMeter mEnsSignal;
     private View mScan;
     private TextView mScanLabel;
+    private View mStepDown;
+    private View mStepUp;
+    private View mKeypadBtn;
+    private float mFmFreqMhz = 98f;
+    // Window after a manual FM action during which refresh() must not overwrite the readout
+    // with the (briefly stale) current-program echo.
+    private static final long FM_MANUAL_HOLD_MS = 2500;
+    private long mFmManualMs;
 
     // Full union list from the controller (both bands) and the band-filtered subset shown.
     private List<Station> mAllStations = new ArrayList<>();
@@ -94,6 +106,28 @@ public class BrowseFragment extends Fragment {
         mScan.setOnClickListener(x -> {
             if (getActivity() instanceof RadioActivity) {
                 ((RadioActivity) getActivity()).showScanWizard();
+            }
+        });
+        UiUtils.addRipple(mScan, UiUtils.ACCENT_DAB, dp(14));
+
+        // FM manual tuning: draggable dial + ∓ step buttons + a numpad.
+        mStepDown = v.findViewById(R.id.fm_step_down);
+        mStepUp = v.findViewById(R.id.fm_step_up);
+        mKeypadBtn = v.findViewById(R.id.fm_keypad);
+        mStepDown.setOnClickListener(x -> tuneFm(snapFm(mFmFreqMhz - 0.1f)));
+        mStepUp.setOnClickListener(x -> tuneFm(snapFm(mFmFreqMhz + 0.1f)));
+        mKeypadBtn.setOnClickListener(x -> showKeypad());
+        UiUtils.addRippleOval(mStepDown, UiUtils.ACCENT_FM);
+        UiUtils.addRippleOval(mStepUp, UiUtils.ACCENT_FM);
+        UiUtils.addRipple(mKeypadBtn, UiUtils.ACCENT_FM, dp(14));
+        mDial.setOnTuneListener(new FmDialView.OnTuneListener() {
+            @Override public void onScrub(float f) {
+                mFmFreqMhz = f;
+                mFreq.setText(fmtFm(f));
+                mDial.setCurrent(f, UiUtils.ACCENT_FM);
+            }
+            @Override public void onCommit(float f) {
+                tuneFm(f);
             }
         });
 
@@ -152,8 +186,12 @@ public class BrowseFragment extends Fragment {
 
         if (isFm) {
             mSubtitle.setText(getString(R.string.browse_subtitle_fm));
-            float needle = 98f;
-            if (mCurrent != null) {
+            // Keep the last manual value as the baseline (never silently snap back to a default);
+            // sync to the current program only outside the manual-hold window and only when its
+            // frequency actually parses.
+            float needle = mFmFreqMhz;
+            boolean manualHold = System.currentTimeMillis() - mFmManualMs < FM_MANUAL_HOLD_MS;
+            if (!manualHold && mCurrent != null) {
                 String f = UiUtils.frequencyShort(mCurrent.getSelector());
                 if (!f.isEmpty()) {
                     try {
@@ -161,6 +199,7 @@ public class BrowseFragment extends Fragment {
                     } catch (NumberFormatException ignore) { }
                 }
             }
+            mFmFreqMhz = needle;
             mFreq.setText(String.format(java.util.Locale.US, "%.1f", needle));
             List<float[]> marks = new ArrayList<>();
             List<Integer> colors = new ArrayList<>();
@@ -181,5 +220,80 @@ public class BrowseFragment extends Fragment {
             mEnsemble.setText(ens);
             mEnsSignal.setLevel(UiUtils.signalLevel(mCurrent), accent);
         }
+    }
+
+    // ---- FM manual tuning --------------------------------------------------------------------
+
+    private void tuneFm(float mhz) {
+        mFmFreqMhz = mhz;
+        mFmManualMs = System.currentTimeMillis();
+        mFreq.setText(fmtFm(mhz));
+        mDial.setCurrent(mhz, UiUtils.ACCENT_FM);
+        mController.tuneFmFrequency(Math.round(mhz * 1000f));
+    }
+
+    private static float snapFm(float mhz) {
+        float v = Math.round(mhz * 10f) / 10f;
+        if (v < 88.0f) v = 88.0f;
+        if (v > 108.0f) v = 108.0f;
+        return v;
+    }
+
+    private static String fmtFm(float mhz) {
+        return String.format(java.util.Locale.US, "%.1f", mhz);
+    }
+
+    private float dp(float d) {
+        return d * getResources().getDisplayMetrics().density;
+    }
+
+    /** Numeric keypad to enter an exact FM frequency (hidden behind the 123 button). */
+    private void showKeypad() {
+        final Context ctx = getContext();
+        if (ctx == null) return;
+        View root = LayoutInflater.from(ctx).inflate(R.layout.fm_keypad, null);
+        final TextView display = root.findViewById(R.id.keypad_display);
+        GridLayout grid = root.findViewById(R.id.keypad_grid);
+        final StringBuilder sb = new StringBuilder();
+
+        final String[] keys = {"1", "2", "3", "4", "5", "6", "7", "8", "9",
+                ".", "0", getString(R.string.fm_keypad_del)};
+        int cell = Math.round(dp(108));
+        int margin = Math.round(dp(5));
+        for (final String k : keys) {
+            TextView b = new TextView(ctx);
+            b.setText(k);
+            b.setGravity(android.view.Gravity.CENTER);
+            b.setTextColor(0xFFFFFFFF);
+            b.setTextSize(TypedValue.COMPLEX_UNIT_PX, dp(30));
+            b.setBackground(UiUtils.roundedRect(0xFF1A1D21, dp(10), dp(1), 0xFF2A2F36));
+            UiUtils.addRipple(b, UiUtils.ACCENT_FM, dp(10));
+            GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+            lp.width = cell;
+            lp.height = cell;
+            lp.setMargins(margin, margin, margin, margin);
+            b.setLayoutParams(lp);
+            b.setOnClickListener(x -> {
+                if (k.equals(getString(R.string.fm_keypad_del))) {
+                    if (sb.length() > 0) sb.deleteCharAt(sb.length() - 1);
+                } else if (k.equals(".")) {
+                    if (sb.indexOf(".") < 0 && sb.length() > 0) sb.append('.');
+                } else {
+                    sb.append(k);
+                }
+                display.setText(sb.length() == 0 ? "—" : sb.toString());
+            });
+            grid.addView(b);
+        }
+
+        new AlertDialog.Builder(ctx, android.R.style.Theme_DeviceDefault_Dialog_Alert)
+                .setView(root)
+                .setPositiveButton(R.string.fm_keypad_tune, (d, w) -> {
+                    try {
+                        tuneFm(snapFm(Float.parseFloat(sb.toString())));
+                    } catch (NumberFormatException ignore) { }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 }

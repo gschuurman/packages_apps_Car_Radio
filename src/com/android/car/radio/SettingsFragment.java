@@ -101,6 +101,7 @@ public class SettingsFragment extends Fragment {
                 sw.setTrackTintList(next ? accent : off);
                 mPrefs.set(item.key, next);
             });
+            UiUtils.addRipple(row, UiUtils.ACCENT_DAB, 0);
             container.addView(row);
         }
 
@@ -135,6 +136,7 @@ public class SettingsFragment extends Fragment {
         ((TextView) row.findViewById(R.id.setting_desc)).setText(desc);
         row.findViewById(R.id.setting_switch).setVisibility(View.GONE);
         row.setOnClickListener(onClick);
+        UiUtils.addRipple(row, UiUtils.ACCENT_DAB, 0);
         container.addView(row);
     }
 }

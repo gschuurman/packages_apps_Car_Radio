@@ -16,12 +16,15 @@
 
 package com.android.car.radio;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.hardware.radio.ProgramSelector;
 import android.hardware.radio.RadioManager.ProgramInfo;
 import android.hardware.radio.RadioMetadata;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -206,5 +209,28 @@ public final class UiUtils {
     /** Translucent version of a color at the given alpha fraction (0..1). */
     public static int alpha(int color, float a) {
         return (color & 0x00FFFFFF) | (Math.round(a * 255f) << 24);
+    }
+
+    // ---- touch feedback ----------------------------------------------------------------------
+
+    /** A bounded ripple drawable (rounded-rect or oval mask) for use as a view foreground, so it
+     *  shows a press highlight without disturbing the view's own (often code-set) background. */
+    @NonNull
+    public static RippleDrawable ripple(int accent, float radiusPx, boolean oval) {
+        GradientDrawable mask = new GradientDrawable();
+        mask.setShape(oval ? GradientDrawable.OVAL : GradientDrawable.RECTANGLE);
+        if (!oval) mask.setCornerRadius(radiusPx);
+        mask.setColor(0xFFFFFFFF);  // only the mask's alpha shape matters
+        return new RippleDrawable(ColorStateList.valueOf(alpha(accent, 0.30f)), null, mask);
+    }
+
+    /** Adds an accent press-ripple to a clickable view as its foreground. */
+    public static void addRipple(@NonNull View v, int accent, float radiusPx) {
+        v.setForeground(ripple(accent, radiusPx, false));
+    }
+
+    /** Adds a circular accent press-ripple to a clickable view as its foreground. */
+    public static void addRippleOval(@NonNull View v, int accent) {
+        v.setForeground(ripple(accent, 0, true));
     }
 }

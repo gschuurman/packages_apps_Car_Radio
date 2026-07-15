@@ -79,6 +79,14 @@ limitations under the License.
     <string name="action_scan_band">Scan band</string>
     <string name="action_scanning">Scanning…</string>
     <string name="action_stop">Stop</string>
+    <string name="status_tuning">Tuning…</string>
+    <string name="status_no_signal">No signal — check the antenna</string>
+    <string name="fm_step_down">−</string>
+    <string name="fm_step_up">+</string>
+    <string name="fm_keypad">123</string>
+    <string name="fm_keypad_title">ENTER FM FREQUENCY (MHz)</string>
+    <string name="fm_keypad_tune">Tune</string>
+    <string name="fm_keypad_del">⌫</string>
     <string name="preset_empty">＋ P%1$d</string>
     <string name="favorites_empty">No favorites yet — tap the star on any station.</string>
     <string name="browse_subtitle_dab">DAB+ services</string>
