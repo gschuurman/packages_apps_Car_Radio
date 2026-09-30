@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.car.media.common.source.MediaTrampolineHelper;
 import com.android.car.radio.bands.ProgramType;
@@ -98,6 +99,15 @@ public class RadioActivity extends FragmentActivity {
         mMediaTrampoline = new MediaTrampolineHelper(this);
 
         mRadioController = new RadioController(this);
+
+        // Fragments get the controller through newInstance(); ones the framework restores
+        // after process death have none and crash in onViewCreated. Drop them: showScreen()
+        // creates fresh instances once the service is connected.
+        if (savedInstanceState != null) {
+            FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+            for (Fragment f : getSupportFragmentManager().getFragments()) tx.remove(f);
+            tx.commitNow();
+        }
 
         mTitle = findViewById(R.id.screen_title);
         mTopSignal = findViewById(R.id.top_signal);
